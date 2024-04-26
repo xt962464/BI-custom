@@ -1,0 +1,30 @@
+HELP.md
+BI_Back/target/
+BI_Back/!.mvn/wrapper/maven-wrapper.jar
+BI_Back/!**/src/main/**/target/
+BI_Back/!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+BI_Back/.idea
+BI_Back/*.iws
+BI_Back/*.iml
+BI_Back/*.ipr
+
+
+!**/src/test/**/build/
+
+### VS Code ###
+BI_Front/.vscode/
+BI_Front/.husky/
+BI_Front/.idea/
+
+BI_Back/.DS_Store
