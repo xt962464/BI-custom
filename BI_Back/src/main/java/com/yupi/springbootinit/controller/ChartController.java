@@ -1,7 +1,6 @@
 package com.yupi.springbootinit.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.gson.Gson;
 import com.yupi.springbootinit.annotation.AuthCheck;
 import com.yupi.springbootinit.common.BaseResponse;
 import com.yupi.springbootinit.common.DeleteRequest;
@@ -10,23 +9,21 @@ import com.yupi.springbootinit.common.ResultUtils;
 import com.yupi.springbootinit.constant.UserConstant;
 import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.exception.ThrowUtils;
-import com.yupi.springbootinit.manager.AIManager;
 import com.yupi.springbootinit.model.dto.chart.*;
 import com.yupi.springbootinit.model.entity.Chart;
 import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.vo.BiResponse;
+import com.yupi.springbootinit.model.vo.ChartVo;
 import com.yupi.springbootinit.service.ChartService;
 import com.yupi.springbootinit.service.UserService;
-import com.yupi.springbootinit.utils.ExcelUtils;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.mp.bean.device.BaseResp;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 帖子接口
@@ -49,15 +46,14 @@ public class ChartController {
 
     /**
      * 根据上传的excel文件和请求生成图表
-     * @param multipartFile 上传的excel文件
+     *
+     * @param multipartFile       上传的excel文件
      * @param genChartByAiRequest 要生成的图表的请求
-     * @param request 请求域
+     * @param request             请求域
      * @return 生成的图表
      */
     @PostMapping("/gen")
-    public BaseResponse<BiResponse> genChart(@RequestPart("file")MultipartFile multipartFile,
-                                             GenChartByAiRequest genChartByAiRequest,
-                                             HttpServletRequest request) {
+    public BaseResponse<BiResponse> genChart(@RequestPart("file") MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
             return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
@@ -67,9 +63,7 @@ public class ChartController {
     }
 
     @PostMapping("/genAsync")
-    public BaseResponse<BiResponse> genChartAsync(@RequestPart("file")MultipartFile multipartFile,
-                                             GenChartByAiRequest genChartByAiRequest,
-                                             HttpServletRequest request) {
+    public BaseResponse<BiResponse> genChartAsync(@RequestPart("file") MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         if (loginUser == null) {
             return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
@@ -174,14 +168,12 @@ public class ChartController {
      * @return
      */
     @PostMapping("/list/chart")
-    public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest,
-            HttpServletRequest request) {
+    public BaseResponse<Page<Chart>> listChartByPage(@RequestBody ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
         long current = chartQueryRequest.getCurrent();
         long size = chartQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<Chart> chartPage = chartService.page(new Page<>(current, size),
-                chartService.getQueryWrapper(chartQueryRequest));
+        Page<Chart> chartPage = chartService.page(new Page<>(current, size), chartService.getQueryWrapper(chartQueryRequest));
         return ResultUtils.success(chartPage);
     }
 
@@ -193,8 +185,7 @@ public class ChartController {
      * @return
      */
     @PostMapping("/my/list/chart")
-    public BaseResponse<Page<Chart>> listMyChartByPage(@RequestBody ChartQueryRequest chartQueryRequest,
-            HttpServletRequest request) {
+    public BaseResponse<Page<ChartVo>> listMyChartByPage(@RequestBody ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
         if (chartQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -204,9 +195,32 @@ public class ChartController {
         long size = chartQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<Chart> chartPage = chartService.page(new Page<>(current, size),
-                chartService.getQueryWrapper(chartQueryRequest));
-        return ResultUtils.success(chartPage);
+        Page<Chart> chartPage = chartService.page(new Page<>(current, size), chartService.getQueryWrapper(chartQueryRequest));
+        Page<ChartVo> voPage = chartService.getChartPageVo(chartPage, request);
+        return ResultUtils.success(voPage);
+    }
+
+    /**
+     * 获取所有图表
+     *
+     * @param chartQueryRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/all/list/chart")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<List<ChartVo>> listChartByAll(@RequestBody ChartQueryRequest chartQueryRequest, HttpServletRequest request) {
+        if (chartQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        chartQueryRequest.setUserId(loginUser.getId());
+        long current = chartQueryRequest.getCurrent();
+        long size = chartQueryRequest.getPageSize();
+        // 限制爬虫
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        List<Chart> list = chartService.list();
+        return ResultUtils.success(list.stream().map(ChartVo::objToVo).toList());
     }
 
 

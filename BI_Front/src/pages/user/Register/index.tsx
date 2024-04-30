@@ -52,8 +52,8 @@ const Register: React.FC = () => {
             }
           }}
           logo={<img alt="logo" src="/logo.svg" />}
-          title="智能BI"
-          subTitle={'智能BI 是基于OpenAPI开发的一个BI项目'}
+          title="长弓智能BI"
+          subTitle={'长弓智能BI 是基于OpenAPI开发的一个BI项目'}
           initialValues={{
             autoLogin: true,
           }}

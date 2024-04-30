@@ -22,4 +22,8 @@ public class SqlUtils {
         }
         return !StringUtils.containsAny(sortField, "=", "(", ")", " ");
     }
+
+    public static String generateLike(String param) {
+        return "%" + param + "%";
+    }
 }

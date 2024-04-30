@@ -1,5 +1,7 @@
 package com.yupi.springbootinit.model.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -21,6 +23,7 @@ public class BiResponse {
     /**
      * 生成的图表的id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long chartId;
 
 }

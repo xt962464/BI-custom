@@ -1,6 +1,6 @@
-# 智能BI
+# 长弓智能BI
 
-This project is initialized with [智能BI](https://pro.ant.design). Follow is the quick guide for how to use.
+This project is initialized with [长弓智能BI](https://pro.ant.design). Follow is the quick guide for how to use.
 
 ## Environment Prepare
 
@@ -18,7 +18,7 @@ yarn
 
 ## Provided Scripts
 
-智能BI provides some useful script to help you quick start and build with web project, code style check and test.
+长弓智能BI provides some useful script to help you quick start and build with web project, code style check and test.
 
 Scripts provided in `package.json`. It's safe to modify or add additional script:
 

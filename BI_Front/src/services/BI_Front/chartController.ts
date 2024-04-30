@@ -159,6 +159,21 @@ export async function listChartByPageUsingPOST(
   });
 }
 
+/** listChartByPage POST /api/chart/list/chart */
+export async function listAllChartUsingPOST(
+  body: API.ChartQueryRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseChartList_>('/api/chart/all/list/chart', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** listMyChartByPage POST /api/chart/my/list/chart */
 export async function listMyChartByPageUsingPOST(
   body: API.ChartQueryRequest,

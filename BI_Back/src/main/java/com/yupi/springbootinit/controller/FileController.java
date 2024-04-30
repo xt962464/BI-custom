@@ -15,6 +15,8 @@ import java.io.File;
 import java.util.Arrays;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import com.yupi.springbootinit.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +41,20 @@ public class FileController {
 
     @Resource
     private CosManager cosManager;
+
+
+    /**
+     * 文件上传
+     *
+     * @param multipartFile
+     * @param request
+     * @return
+     */
+    @PostMapping("/upload-local")
+    public BaseResponse<String> uploadFileLocal(@RequestPart("file") MultipartFile multipartFile, HttpServletRequest request) {
+        return ResultUtils.success(FileUtils.upload(multipartFile));
+    }
+
 
     /**
      * 文件上传

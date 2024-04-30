@@ -2,6 +2,7 @@ package com.yupi.springbootinit.service;
 
 import co.elastic.clients.elasticsearch.sql.QueryRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yupi.springbootinit.model.dto.chart.ChartQueryRequest;
 import com.yupi.springbootinit.model.dto.chart.GenChartByAiRequest;
 import com.yupi.springbootinit.model.dto.post.PostQueryRequest;
@@ -10,7 +11,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.yupi.springbootinit.model.entity.Post;
 import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.vo.BiResponse;
+import com.yupi.springbootinit.model.vo.ChartVo;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
 * @author 叶孙勇
@@ -26,4 +30,8 @@ public interface ChartService extends IService<Chart> {
     BiResponse genChartAsync(MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, User loginUser);
 
     BiResponse genChartAsyncByTP(MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, User loginUser);
+
+    Page<ChartVo> getChartPageVo(Page<Chart> chartPage, HttpServletRequest request);
+
+    ChartVo getChartVo(Chart chart);
 }

@@ -1,5 +1,8 @@
 package com.yupi.springbootinit.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yupi.springbootinit.model.entity.Post;
@@ -23,6 +26,7 @@ public class PostVO implements Serializable {
     /**
      * id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     /**
@@ -48,16 +52,19 @@ public class PostVO implements Serializable {
     /**
      * 创建用户 id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
 
     /**
      * 创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /**

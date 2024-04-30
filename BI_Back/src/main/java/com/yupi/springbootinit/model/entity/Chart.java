@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -17,6 +20,7 @@ public class Chart implements Serializable {
      * id
      */
     @TableId(type = IdType.ASSIGN_ID)
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     /**
@@ -42,6 +46,7 @@ public class Chart implements Serializable {
     /**
      * 图表所属用户id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
 
     /**

@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -22,16 +25,19 @@ public class PostThumb implements Serializable {
      * id
      */
     @TableId(type = IdType.AUTO)
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     /**
      * 帖子 id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long postId;
 
     /**
      * 创建用户 id
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
 
     /**

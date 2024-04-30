@@ -3,6 +3,7 @@ package com.yupi.springbootinit.service.impl;
 
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yupi.springbootinit.common.ErrorCode;
 import com.yupi.springbootinit.constant.CommonConstant;
@@ -10,39 +11,47 @@ import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.exception.ThrowUtils;
 import com.yupi.springbootinit.manager.AIManager;
 import com.yupi.springbootinit.manager.RedissonManager;
+import com.yupi.springbootinit.mapper.ChartMapper;
+import com.yupi.springbootinit.mapper.EvaluateMapper;
 import com.yupi.springbootinit.mapper.TableMapper;
 import com.yupi.springbootinit.model.dto.chart.ChartQueryRequest;
 import com.yupi.springbootinit.model.dto.chart.GenChartByAiRequest;
 import com.yupi.springbootinit.model.entity.Chart;
+import com.yupi.springbootinit.model.entity.Evaluate;
 import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.vo.BiResponse;
+import com.yupi.springbootinit.model.vo.ChartVo;
+import com.yupi.springbootinit.model.vo.EvaluateVo;
 import com.yupi.springbootinit.mq.MQProductor;
 import com.yupi.springbootinit.service.ChartService;
-import com.yupi.springbootinit.mapper.ChartMapper;
+import com.yupi.springbootinit.service.UserService;
 import com.yupi.springbootinit.utils.ExcelUtils;
 import com.yupi.springbootinit.utils.SqlUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.usermodel.TextHorizontalOverflow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 /**
-* @author 叶孙勇
-* @description 针对表【chart(图表信息)】的数据库操作Service实现
-* @createDate 2023-08-28 15:53:16
-*/
+ * @author 叶孙勇
+ * @description 针对表【chart(图表信息)】的数据库操作Service实现
+ * @createDate 2023-08-28 15:53:16
+ */
 @Service
 public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
-    implements ChartService{
+        implements ChartService {
 
     @Resource
     private AIManager aiManager;
@@ -59,6 +68,11 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
     @Resource
     private TableMapper tableMapper;
 
+    @Autowired
+    private EvaluateMapper evaluateMapper;
+
+    @Autowired
+    private UserService userService;
 
 
     @Override
@@ -187,14 +201,15 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
 
     /**
      * 根据用户输入让AI生成图表和分析结论
+     *
      * @param multipartFile
      * @param genChartByAiRequest
      * @return
      */
     @Override
     public BiResponse genChartAsyncByTP(MultipartFile multipartFile,
-                               GenChartByAiRequest genChartByAiRequest,
-                               User loginUser) {
+                                        GenChartByAiRequest genChartByAiRequest,
+                                        User loginUser) {
 
         ThrowUtils.throwIf(!redissonManager.doRateLimit("genChart_" + loginUser.getId()), ErrorCode.FORBIDDEN_ERROR, "请求过于频繁");
 
@@ -313,6 +328,52 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
         return queryWrapper;
     }
 
+    @Override
+    public Page<ChartVo> getChartPageVo(Page<Chart> chartPage, HttpServletRequest request) {
+        List<Chart> chartList = chartPage.getRecords();
+        Page<ChartVo> chartVOPage = new Page<>(chartPage.getCurrent(), chartPage.getSize(), chartPage.getTotal());
+        if (CollectionUtils.isEmpty(chartList)) {
+            return chartVOPage;
+        }
+        // 当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        // 1. 关联查询用户信息
+        List<Long> chartIdList = chartList.stream().map(Chart::getId).toList();
+        Map<Long, List<Evaluate>> evaluateChartMap = evaluateMapper.selectList(new QueryWrapper<>(new Evaluate()).in("chartId", chartIdList)).stream().collect(Collectors.groupingBy(Evaluate::getChartId));
+        // 填充信息
+        List<ChartVo> postVOList = chartList.stream().map(chart -> {
+            ChartVo chartVo = ChartVo.objToVo(chart);
+            Long chartId = chartVo.getId();
+            boolean loginUserEvaluateInd = false;
+            if (evaluateChartMap.containsKey(chartId)) {
+                List<Evaluate> evaluates = evaluateChartMap.get(chartId);
+                if (CollectionUtils.isNotEmpty(evaluates)) {
+                    List<EvaluateVo> list = new ArrayList<>();
+                    for (Evaluate evaluate : evaluates) {
+                        EvaluateVo evaluateVo = EvaluateVo.objToVo(evaluate);
+                        evaluateVo.setUser(userService.getUserVoById(evaluateVo.getUserId()));
+                        list.add(evaluateVo);
+                    }
+                    chartVo.setEvaluateList(list);
+                    // 判断登录用户是否评价
+                    loginUserEvaluateInd = !evaluates.stream().filter(evaluate -> evaluate.getUserId().equals(loginUser.getId())).toList().isEmpty();
+                }
+            }
+            // 判断当前
+            chartVo.setIsEvaluate(loginUserEvaluateInd);
+            return chartVo;
+        }).collect(Collectors.toList());
+        chartVOPage.setRecords(postVOList);
+        return chartVOPage;
+    }
+
+    @Override
+    public ChartVo getChartVo(Chart chart) {
+        if (chart != null) {
+            return ChartVo.objToVo(chart);
+        }
+        return null;
+    }
 }
 
 

@@ -69,10 +69,10 @@ export default () => {
       placeholder="站内搜索"
       defaultValue="umi ui"
       options={[
-        { label: '智能BI', value: '智能BI' },
+        { label: '长弓智能BI', value: '长弓智能BI' },
         {
-          label: '智能BI',
-          value: '智能BI',
+          label: '长弓智能BI',
+          value: '长弓智能BI',
         },
         {
           label: 'Pro Table',
@@ -237,8 +237,8 @@ RightContent 是以上几个组件的组合，同时新增了 plugins 的 `Selec
     options={[
       { label: <a href="https://umijs.org/zh/guide/umi-ui.html">umi ui</a>, value: 'umi ui' },
       {
-        label: <a href="next.ant.design">智能BI</a>,
-        value: '智能BI',
+        label: <a href="next.ant.design">长弓智能BI</a>,
+        value: '长弓智能BI',
       },
       {
         label: <a href="https://protable.ant.design/">Pro Table</a>,

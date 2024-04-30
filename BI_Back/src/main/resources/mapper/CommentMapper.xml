@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yupi.springbootinit.mapper.CommentMapper">
+
+
+    <select id="searchPage" resultType="com.yupi.springbootinit.model.entity.Comment">
+        select
+            c.*
+        from
+            comment c
+            <if test="params.userName != null and params.userName != ''">
+                ,`user` u
+            </if>
+
+            <where>
+                <if test="params.createTime != null and params.createTime != ''">
+                    c.createTime = #{params.createTime}
+                </if>
+                <if test="params.content != null and params.content != ''">
+                    and c.content like #{params.content}
+                </if>
+                <if test="params.userName != null and params.userName != ''">
+                    and c.userId = u.id
+                    and ( u.userAccount like #{params.userName} or u.userName like #{params.userName} )
+                </if>
+            </where>
+        order by c.createTime desc
+    </select>
+
+</mapper>

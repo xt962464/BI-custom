@@ -5,12 +5,13 @@ spring:
   application:
     name: BI_Back
   # 默认 dev 环境
-  profiles:
-    active: dev
+#  profiles:
+#    active: dev
   # 支持 swagger3
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+    date-format: yyyy-MM-dd HH:mm:ss
   # session 配置
   session:
     # todo 取消注释开启分布式 session（须先配置 Redis）
@@ -23,7 +24,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/bi_db
     username: root
-    password: 200109
+    password: 123456
   # Redis 配置
   # todo 需替换配置，然后取消注释
 #  redis:
@@ -35,7 +36,7 @@ spring:
 #  redission 限流配置
   redisson:
     database: 1
-    host: localhost
+    host: 127.0.0.1
     port: 6379
     timeout: 5000
 #  rabbitmq相关配置
@@ -54,6 +55,10 @@ spring:
     multipart:
       # 大小限制
       max-file-size: 10MB
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: NON_NULL
 server:
   address: 0.0.0.0
   port: 8101
@@ -104,5 +109,10 @@ cos:
 #AI配置
 yuapi:
   client:
-    access-key: eg2g47uis3swap1y1jy7mo3j6dsw0pvb
-    secret-key: 5hc53ujmvjokeylenb9tybuh0dumil1f
+    access-key: g5ezkqbtb9uf9ojk0e5598durdwq9fxw
+    secret-key: n652tehmb1z8yd6dl9hfz1lvw18ud9os
+
+#阿里云
+aliyun:
+  access-key-id: LTAI5tGR9fm2RsaXb5HE3pH5
+  secret: G2iu0niwkkHAtcTurlZ5e4DJK3IweV

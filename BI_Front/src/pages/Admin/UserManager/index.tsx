@@ -1,6 +1,6 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { useRef } from 'react';
+import {useRef, useState} from 'react';
 import {listUserByPageUsingPOST} from "@/services/BI_Front/userController";
 export const waitTimePromise = async (time: number = 100) => {
   return new Promise((resolve) => {
@@ -170,6 +170,10 @@ const columns: ProColumns<API.User>[] = [
 
 export default () => {
   const actionRef = useRef<ActionType>();
+  const [pageSize, setPageSize] = useState<number>();
+  const [pageTotal, setPageTotal] = useState<number>();
+  const [total, setTotal] = useState<number>();
+  const [current, setCurrent] = useState<number>();
   return (
     <ProTable<API.User>
       columns={columns}
@@ -179,10 +183,20 @@ export default () => {
         console.log(sort, filter);
         const userPage = await listUserByPageUsingPOST(params);
         const pageDate = userPage.data;
+        setPageSize(pageDate.size);
+        setPageTotal(pageDate.pages);
+        setCurrent(pageDate.current);
+        setTotal(pageDate.total);
         // @ts-ignore
         const userList = pageDate.records;
         return {
-          data: userList
+          data: userList,
+          success: true,
+          current: pageDate.current,
+          pageSize: pageDate.size,
+          pages: pageDate.pages,
+          // 不传会使用 data 的长度，如果是分页一定要传
+          total: pageDate.total,
         }
       }}
       editable={{
@@ -217,7 +231,7 @@ export default () => {
         },
       }}
       pagination={{
-        pageSize: 5,
+        current: current,
         onChange: (page) => console.log(page),
       }}
       dateFormatter="string"

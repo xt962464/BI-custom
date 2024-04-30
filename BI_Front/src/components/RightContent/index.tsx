@@ -28,8 +28,8 @@ const GlobalHeaderRight: React.FC = () => {
             value: 'umi ui',
           },
           {
-            label: <a href="next.ant.design">智能BI</a>,
-            value: '智能BI',
+            label: <a href="next.ant.design">长弓智能BI</a>,
+            value: '长弓智能BI',
           },
           {
             label: <a href="https://protable.ant.design/">Pro Table</a>,

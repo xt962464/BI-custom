@@ -40,9 +40,21 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponse_ = {
+    code?: number;
+    data?: any;
+    message?: string;
+  };
+
   type BaseResponsePageChart_ = {
     code?: number;
     data?: PageChart_;
+    message?: string;
+  };
+
+  type BaseResponseChartList_ = {
+    code?: number;
+    data?: Chart[];
     message?: string;
   };
 
@@ -102,12 +114,14 @@ declare namespace API {
     genChart?: string;
     genResult?: string;
     goal?: string;
-    id?: number;
+    id?: any;
     isDelete?: number;
     name?: string;
     status?: string;
     updateTime?: string;
     userId?: number;
+    isEvaluate: boolean;
+    evaluateList: Evaluate[]
   };
 
   type ChartAddRequest = {
@@ -160,7 +174,7 @@ declare namespace API {
   };
 
   type DeleteRequest = {
-    id?: number;
+    id?: any;
   };
 
   type genChartAsyncUsingPOSTParams = {
@@ -403,8 +417,112 @@ declare namespace API {
     createTime?: string;
     id?: number;
     userAvatar?: string;
+    userAccount?: string;
     userName?: string;
     userProfile?: string;
     userRole?: string;
   };
+
+  type Evaluate = {
+    id: string;
+    userId: string;
+    chartId: string;
+    content: string;
+    createTime?: string;
+    updateTime?: string;
+    user: UserVO;
+    chart: Chart
+  }
+
+  type EvaluateQueryRequest = {
+    id: string;
+    userId: string;
+    chartId: string;
+    content: string;
+    userName: string;
+    chartName: string;
+    createTime?: string;
+    updateTime?: string;
+  }
+
+  type EvaluateAddRequest = {
+    userId?: string;
+    chartId: string;
+    content: string;
+  }
+
+  type EvaluateUpdateRequest = {
+    id: string;
+    userId: string;
+    chartId: string;
+    content: string;
+  }
+
+  type PageEvaluate_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: Evaluate[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type BaseResponsePageEvaluate_ = {
+    code?: number;
+    data?: PageEvaluate_;
+    message?: string;
+  };
+
+
+  type Comment = {
+    id: string;
+    userId: string;
+    content: string;
+    createTime?: string;
+    updateTime?: string;
+    user: UserVO;
+  }
+
+  type CommentQueryRequest = {
+    id?: string;
+    userId?: string;
+    content?: string;
+    createTime?: string;
+    updateTime?: string;
+  }
+
+  type CommentUpdateRequest = {
+    id: string;
+    userId: string;
+    content: string;
+  }
+
+  type CommentAddRequest = {
+    userId?: string;
+    content: string;
+  }
+
+  type PageComment_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: Comment[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type BaseResponsePageComment_ = {
+    code?: number;
+    data?: PageComment_;
+    message?: string;
+  };
+
 }
