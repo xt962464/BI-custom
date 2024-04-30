@@ -109,10 +109,10 @@ cos:
 #AI配置
 yuapi:
   client:
-    access-key: g5ezkqbtb9uf9ojk0e5598durdwq9fxw
-    secret-key: n652tehmb1z8yd6dl9hfz1lvw18ud9os
+    access-key: xxx
+    secret-key: xxx
 
 #阿里云
 aliyun:
-  access-key-id: LTAI5tGR9fm2RsaXb5HE3pH5
-  secret: G2iu0niwkkHAtcTurlZ5e4DJK3IweV
+  access-key-id: xx
+  secret: xxx
